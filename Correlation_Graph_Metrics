@@ -1,0 +1,55 @@
+import numpy as np
+import networkx as nx
+import matplotlib.pyplot as plt
+from scipy import stats
+
+
+activity_file_location =
+correlation_sigificance_threahold = 0.05
+#Takes a Matrix with Neurons as Rows and Activity Over Time As Columns
+#Creates a network - If Two neurons have a signficant correlation we say they are connected, otherwise we say they are not
+#This creates an undirected, uneighted graph - In the future we could explore directed and weighted graphs
+#From This We Then Calcuate Some Graph Metrics
+
+
+#Load Activity Matrix From CSV File
+
+def load_activity_matrix(activity_file_location):
+    print("loading activity matrix")
+    activity_matrix = np.genfromtxt(activity_file_location)
+    return activity_matrix
+
+
+
+#Create Graph
+def create_graph(activity_matrix):
+
+    number_of_neurons = np.shape(activity_matrix)[0]
+    connection_matrix = np.zeros((number_of_neurons, number_of_neurons))
+
+    for neuron_1 in range(number_of_neurons):
+        for neuron_2 in range(neuron_1, number_of_neurons):
+            print("From Neuron: ", neuron_1, " To Neuron ", neuron_2)
+            correlation_coefficient, p_value = stats.pearsonr(activity_matrix[neuron_1], [activity_matrix[neuron_2]])
+
+            if p_value < correlation_sigificance_threahold:
+                connection_matrix[neuron_1][neuron_2] = 1
+                connection_matrix[neuron_2][neuron_1] = 1
+
+    graph = nx.from_numpy_array(connection_matrix)
+
+    return graph
+
+
+#Calculate Graph Metrics
+def calculate_graph_metrics(graph):
+
+    #Clustering Coefficient
+    clustering_coefficient = nx.average_clustering(graph)
+
+    #Characteristic Path Length
+    characteristic_path_length = nx.average_shortest_path_length(graph)
+
+    #Small World Coefficient
+    nx.smallword
+
